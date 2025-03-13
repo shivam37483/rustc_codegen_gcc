@@ -516,9 +516,10 @@ impl<'gcc, 'tcx> ArgAbiExt<'gcc, 'tcx> for ArgAbi<'tcx, Ty<'tcx>> {
             return;
         }
         if self.is_sized_indirect() {
-            // Test
             let align = match &self.mode {
-                PassMode::Indirect { attrs, .. } => attrs.pointee_align.unwrap_or(self.layout.align.abi),
+                PassMode::Indirect { attrs, .. } => {
+                    attrs.pointee_align.unwrap_or(self.layout.align.abi)
+                }
                 _ => self.layout.align.abi,
             };
             OperandValue::Ref(PlaceValue::new_sized(val, align)).store(bx, dst)
