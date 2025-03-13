@@ -516,7 +516,11 @@ impl<'gcc, 'tcx> ArgAbiExt<'gcc, 'tcx> for ArgAbi<'tcx, Ty<'tcx>> {
             return;
         }
         if self.is_sized_indirect() {
-            OperandValue::Ref(PlaceValue::new_sized(val, self.layout.align.abi)).store(bx, dst)
+            let align = match &self.mode {
+                PassMode::Indirect { attrs, .. } => attrs.pointee_align.unwrap_or(self.layout.align.abi),
+                _ => self.layout.align.abi,
+            };
+            OperandValue::Ref(PlaceValue::new_sized(val, align)).store(bx, dst)
         } else if self.is_unsized_indirect() {
             bug!("unsized `ArgAbi` must be handled through `store_fn_arg`");
         } else if let PassMode::Cast { ref cast, .. } = self.mode {
