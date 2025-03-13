@@ -517,7 +517,7 @@ impl<'gcc, 'tcx> ArgAbiExt<'gcc, 'tcx> for ArgAbi<'tcx, Ty<'tcx>> {
         }
         if self.is_sized_indirect() {
             let align = match &self.mode {
-                PassMode::Indirect { attrs, .. } => {
+                &PassMode::Indirect { attrs, .. } => {
                     attrs.pointee_align.unwrap_or(self.layout.align.abi)
                 }
                 _ => self.layout.align.abi,
